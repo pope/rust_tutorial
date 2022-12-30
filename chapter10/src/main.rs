@@ -88,7 +88,11 @@ impl<'a> ImportantExcerpt<'a> {
 	}
 }
 
-fn longest_with_an_announcement<'a, T>(x: &'a str, y: &'a str, ann: T) -> &'a str
+fn longest_with_an_announcement<'a, T>(
+	x: &'a str,
+	y: &'a str,
+	ann: T,
+) -> &'a str
 where
 	T: fmt::Display,
 {
@@ -134,7 +138,9 @@ fn main() {
 
 	let tweet = Tweet {
 		username: String::from("horse_ebooks"),
-		content: String::from("of course, as you probably already know, people"),
+		content: String::from(
+			"of course, as you probably already know, people",
+		),
 		reply: false,
 		retweet: false,
 	};
@@ -165,6 +171,7 @@ fn main() {
 	let part = i.announce_and_return_part("Yo");
 	println!("Important excepter part: {}", part);
 
-	let result = longest_with_an_announcement(string1.as_str(), string2, "Whyyyy?");
+	let result =
+		longest_with_an_announcement(string1.as_str(), string2, "Whyyyy?");
 	println!("The longest string is {}", result);
 }
