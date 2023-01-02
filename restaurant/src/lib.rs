@@ -7,26 +7,26 @@ mod front_of_house {
 use crate::front_of_house::hosting;
 
 pub fn eat_at_restaurant() {
-	// All the same. Just different path lookups.
+	// All the same. Just different ways to access the method.
 	crate::front_of_house::hosting::add_to_waitlist();
 	front_of_house::hosting::add_to_waitlist();
 	hosting::add_to_waitlist();
 
-	let order1 = back_of_house::Appetizer::Soup;
-	let order2 = back_of_house::Appetizer::Salad;
+	let _order1 = back_of_house::Appetizer::Soup;
+	let _order2 = back_of_house::Appetizer::Salad;
 }
 
-fn deliver_order() {}
+fn _deliver_order() {}
 
 mod back_of_house {
-	pub struct Breakfast {
+	pub struct _Breakfast {
 		pub toast: String,
 		seasonal_fruit: String,
 	}
 
-	impl Breakfast {
-		pub fn summer(toast: &str) -> Breakfast {
-			Breakfast {
+	impl _Breakfast {
+		pub fn _summer(toast: &str) -> _Breakfast {
+			_Breakfast {
 				toast: String::from(toast),
 				seasonal_fruit: String::from("peaches"),
 			}
@@ -38,19 +38,19 @@ mod back_of_house {
 		Salad,
 	}
 
-	fn fix_incorrect_order() {
-		cook_order();
-		super::deliver_order();
-		crate::deliver_order();
+	fn _fix_incorrect_order() {
+		_cook_order();
+		super::_deliver_order();
+		crate::_deliver_order();
 	}
 
-	fn cook_order() {}
+	fn _cook_order() {}
 }
 
 mod customer {
 	use crate::front_of_house::hosting;
 
-	pub fn eat_at_restaurant() {
+	pub fn _eat_at_restaurant() {
 		hosting::add_to_waitlist();
 	}
 }
