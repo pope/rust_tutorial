@@ -3,10 +3,30 @@
 version = 3
 
 [[package]]
+name = "adder"
+version = "0.1.0"
+
+[[package]]
+name = "backyard"
+version = "0.1.0"
+
+[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
+
+[[package]]
+name = "chapter10"
+version = "0.1.0"
+
+[[package]]
+name = "const-list"
+version = "0.1.0"
+
+[[package]]
+name = "d-linked-list"
+version = "0.1.0"
 
 [[package]]
 name = "getrandom"
@@ -27,10 +47,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "hello_cargo"
+version = "0.1.0"
+
+[[package]]
+name = "leaves-from-the-vine"
+version = "0.1.0"
+
+[[package]]
 name = "libc"
 version = "0.2.139"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "201de327520df007757c1f0adce6e827fe8562fbc28bfd9c15571c66ca1f5f79"
+
+[[package]]
+name = "limit-tracker"
+version = "0.1.0"
+
+[[package]]
+name = "minigrep"
+version = "0.1.0"
 
 [[package]]
 name = "ppv-lite86"
@@ -67,6 +103,22 @@ checksum = "ec0be4795e2f6a28069bec0b5ff3e2ac9bafc99e6a9a7dc3547996c5c816922c"
 dependencies = [
  "getrandom",
 ]
+
+[[package]]
+name = "rectangles"
+version = "0.1.0"
+
+[[package]]
+name = "restaurant"
+version = "0.1.0"
+
+[[package]]
+name = "shirt-company"
+version = "0.1.0"
+
+[[package]]
+name = "variables"
+version = "0.1.0"
 
 [[package]]
 name = "wasi"
