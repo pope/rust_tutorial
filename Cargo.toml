@@ -1,18 +1,9 @@
 [workspace]
 
-members = [
-	"adder",
-	"backyard",
-	"chapter10",
-	"const-list",
-	"d-linked-list",
-	"guessing_game",
-	"hello_cargo",
-	"leaves-from-the-vine",
-	"limit-tracker",
-	"minigrep",
-	"rectangles",
-	"restaurant",
-	"shirt-company",
-	"variables"
+members = ["*"]
+exclude = [
+	".git",
+	"add",
+	"hello_world",
+	"target"
 ]
