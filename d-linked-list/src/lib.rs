@@ -59,7 +59,7 @@ impl<T: Copy + fmt::Debug> List<T> {
 					current_tail.borrow().next.is_none(),
 					"Tail should not have a next entry"
 				);
-				node.prev = Some(Rc::downgrade(&current_tail));
+				node.prev = Some(Rc::downgrade(current_tail));
 				self.tail = node.into();
 				current_tail.borrow_mut().next = self.tail.clone();
 			}
@@ -85,11 +85,10 @@ impl<T: Copy + fmt::Debug> List<T> {
 					None => {
 						debug_assert!(
 							Rc::ptr_eq(
-								&self
-									.head
+								self.head
 									.as_ref()
 									.expect("Head should have a value"),
-								&tail_ptr
+								tail_ptr
 							),
 							"When the tail's previous value is None, then the \
 								tail and head values should be the same \
@@ -138,7 +137,7 @@ impl<T: Copy + fmt::Debug> List<T> {
 				node.next = Some(current_head.clone());
 				self.head = node.into();
 				current_head.borrow_mut().prev =
-					Some(Rc::downgrade(&self.head.as_ref().unwrap()));
+					Some(Rc::downgrade(self.head.as_ref().unwrap()));
 			}
 		};
 	}
@@ -162,11 +161,10 @@ impl<T: Copy + fmt::Debug> List<T> {
 					None => {
 						debug_assert!(
 							Rc::ptr_eq(
-								&self
-									.tail
+								self.tail
 									.as_ref()
 									.expect("Tail should have a value"),
-								&head_ptr
+								head_ptr
 							),
 							"When the head's next value is None, then the \
 								tail and head values should be the same \
@@ -196,9 +194,15 @@ impl<T: Copy + fmt::Debug> List<T> {
 	}
 }
 
+impl<T: Copy + fmt::Debug> Default for List<T> {
+	fn default() -> Self {
+		Self::new()
+	}
+}
+
 impl<T: Copy + fmt::Debug> Drop for List<T> {
 	fn drop(&mut self) {
-		while let Some(_) = self.pop_back() {}
+		while self.pop_back().is_some() {}
 	}
 }
 
