@@ -192,6 +192,13 @@ impl<T: Copy + fmt::Debug> List<T> {
 			}
 		}
 	}
+
+	pub fn iter(&self) -> ListIterator<T> {
+		ListIterator {
+			current: self.head.clone(),
+			current_back: self.tail.clone(),
+		}
+	}
 }
 
 impl<T: Copy + fmt::Debug> Default for List<T> {
@@ -206,14 +213,48 @@ impl<T: Copy + fmt::Debug> Drop for List<T> {
 	}
 }
 
+pub struct ListIterator<T: Copy + fmt::Debug> {
+	current: Option<NodePtr<T>>,
+	current_back: Option<NodePtr<T>>,
+}
+
+impl<T: Copy + fmt::Debug> Iterator for ListIterator<T> {
+	type Item = T;
+
+	fn next(&mut self) -> Option<Self::Item> {
+		match self.current.take() {
+			None => None,
+			Some(current) => {
+				let current = current.borrow();
+				self.current = current.next.clone();
+				Some(current.value)
+			}
+		}
+	}
+}
+
+impl<T: Copy + fmt::Debug> DoubleEndedIterator for ListIterator<T> {
+	fn next_back(&mut self) -> Option<Self::Item> {
+		match self.current_back.take() {
+			None => None,
+			Some(current) => {
+				let current = current.borrow();
+				if let Some(prev) = &current.prev {
+					self.current_back = prev.upgrade();
+				}
+				Some(current.value)
+			}
+		}
+	}
+}
+
 #[cfg(test)]
 mod tests {
 	use super::*;
 
 	#[test]
-	fn it_works() {
+	fn manages_list_from_back() {
 		let mut list = List::new();
-
 		list.push_back(1);
 		list.push_back(2);
 		list.push_back(3);
@@ -224,7 +265,11 @@ mod tests {
 		assert_eq!(list.pop_back(), Some(2));
 		assert_eq!(list.pop_back(), Some(1));
 		assert_eq!(list.pop_back(), None);
+	}
 
+	#[test]
+	fn manages_list_from_front() {
+		let mut list = List::new();
 		list.push_front(4);
 		list.push_front(3);
 		list.push_front(2);
@@ -235,5 +280,37 @@ mod tests {
 		assert_eq!(list.pop_front(), Some(3));
 		assert_eq!(list.pop_front(), Some(4));
 		assert_eq!(list.pop_front(), None);
+	}
+
+	#[test]
+	fn iterates_through_list() {
+		let mut list = List::new();
+		list.push_back(1);
+		list.push_back(2);
+		list.push_back(3);
+		list.push_back(4);
+
+		let mut iter = list.iter();
+		assert_eq!(iter.next(), Some(1));
+		assert_eq!(iter.next(), Some(2));
+		assert_eq!(iter.next(), Some(3));
+		assert_eq!(iter.next(), Some(4));
+		assert_eq!(iter.next(), None);
+
+		// Or
+
+		let expected = vec![1, 2, 3, 4];
+		assert_eq!(list.iter().collect::<Vec<i32>>(), expected);
+	}
+
+	#[test]
+	fn iterates_through_list_in_reverse() {
+		let mut list = List::new();
+		list.push_back(1);
+		list.push_back(2);
+		list.push_back(3);
+		list.push_back(4);
+
+		assert_eq!(list.iter().rev().collect::<Vec<i32>>(), vec![4, 3, 2, 1]);
 	}
 }
