@@ -1,9 +1,8 @@
 use std::cell::RefCell;
-use std::fmt;
 use std::rc::{Rc, Weak};
 
 #[derive(Debug)]
-pub struct Node<T: Copy + fmt::Debug> {
+pub struct Node<T: Copy> {
 	pub value: T,
 	pub next: Option<NodePtr<T>>,
 	pub prev: Option<NodeWeakPtr<T>>,
@@ -12,7 +11,7 @@ pub struct Node<T: Copy + fmt::Debug> {
 type NodePtr<T> = Rc<RefCell<Node<T>>>;
 type NodeWeakPtr<T> = Weak<RefCell<Node<T>>>;
 
-impl<T: Copy + fmt::Debug> Node<T> {
+impl<T: Copy> Node<T> {
 	pub fn new(value: T) -> Self {
 		Node {
 			value,
@@ -22,19 +21,19 @@ impl<T: Copy + fmt::Debug> Node<T> {
 	}
 }
 
-impl<T: Copy + fmt::Debug> From<Node<T>> for Option<NodePtr<T>> {
+impl<T: Copy> From<Node<T>> for Option<NodePtr<T>> {
 	fn from(node: Node<T>) -> Self {
 		Some(Rc::new(RefCell::new(node)))
 	}
 }
 
 #[derive(Debug)]
-pub struct List<T: Copy + fmt::Debug> {
+pub struct List<T: Copy> {
 	head: Option<NodePtr<T>>,
 	tail: Option<NodePtr<T>>,
 }
 
-impl<T: Copy + fmt::Debug> List<T> {
+impl<T: Copy> List<T> {
 	pub fn new() -> Self {
 		List {
 			head: None,
@@ -193,6 +192,64 @@ impl<T: Copy + fmt::Debug> List<T> {
 		}
 	}
 
+	pub fn move_node_to_back(&mut self, node: NodePtr<T>) {
+		self.remove_node(&node);
+		self.push_node_back(node);
+	}
+
+	pub fn remove_node(&mut self, node: &NodePtr<T>) {
+		let (prev, next) = {
+			let mut node = node.borrow_mut();
+			let prev = match node.prev.take() {
+				None => None,
+				Some(prev) => prev.upgrade(),
+			};
+			let next = node.next.take();
+			(prev, next)
+		};
+
+		match (prev, next) {
+			(None, None) => {
+				// Both head and tail
+				self.head = None;
+				self.tail = None;
+			}
+			(None, Some(next)) => {
+				// At the head
+				next.borrow_mut().prev = None;
+				self.head.replace(next);
+			}
+			(Some(prev), None) => {
+				// At the tail
+				prev.borrow_mut().next = None;
+				self.tail.replace(prev);
+			}
+			(Some(prev), Some(next)) => {
+				// From the middle
+				next.borrow_mut().prev.replace(Rc::downgrade(&prev));
+				prev.borrow_mut().next.replace(next);
+			}
+		};
+	}
+
+	pub fn push_node_back(&mut self, node: NodePtr<T>) {
+		match self.tail.take() {
+			None => {
+				self.head.replace(node);
+				self.tail = self.head.clone();
+			}
+			Some(current_tail) => {
+				node.borrow_mut().prev.replace(Rc::downgrade(&current_tail));
+				self.tail.replace(node);
+				current_tail.borrow_mut().next = self.tail.clone();
+			}
+		}
+	}
+
+	pub fn get_weak_tail(&self) -> Option<NodeWeakPtr<T>> {
+		self.tail.as_ref().map(Rc::downgrade)
+	}
+
 	pub fn iter(&self) -> ListIterator<T> {
 		ListIterator {
 			current: self.head.clone(),
@@ -201,24 +258,24 @@ impl<T: Copy + fmt::Debug> List<T> {
 	}
 }
 
-impl<T: Copy + fmt::Debug> Default for List<T> {
+impl<T: Copy> Default for List<T> {
 	fn default() -> Self {
 		Self::new()
 	}
 }
 
-impl<T: Copy + fmt::Debug> Drop for List<T> {
+impl<T: Copy> Drop for List<T> {
 	fn drop(&mut self) {
 		while self.pop_back().is_some() {}
 	}
 }
 
-pub struct ListIterator<T: Copy + fmt::Debug> {
+pub struct ListIterator<T: Copy> {
 	current: Option<NodePtr<T>>,
 	current_back: Option<NodePtr<T>>,
 }
 
-impl<T: Copy + fmt::Debug> Iterator for ListIterator<T> {
+impl<T: Copy> Iterator for ListIterator<T> {
 	type Item = T;
 
 	fn next(&mut self) -> Option<Self::Item> {
@@ -233,7 +290,7 @@ impl<T: Copy + fmt::Debug> Iterator for ListIterator<T> {
 	}
 }
 
-impl<T: Copy + fmt::Debug> DoubleEndedIterator for ListIterator<T> {
+impl<T: Copy> DoubleEndedIterator for ListIterator<T> {
 	fn next_back(&mut self) -> Option<Self::Item> {
 		match self.current_back.take() {
 			None => None,
@@ -312,5 +369,19 @@ mod tests {
 		list.push_back(4);
 
 		assert_eq!(list.iter().rev().collect::<Vec<i32>>(), vec![4, 3, 2, 1]);
+	}
+
+	#[test]
+	fn push_node_back() {
+		let mut list = List::new();
+		list.push_back(1);
+		list.push_back(2);
+		let node_to_move = list.get_weak_tail().unwrap().upgrade().unwrap();
+		list.push_back(3);
+		list.push_back(4);
+
+		list.move_node_to_back(node_to_move);
+
+		assert_eq!(list.iter().collect::<Vec<i32>>(), vec![1, 3, 4, 2]);
 	}
 }

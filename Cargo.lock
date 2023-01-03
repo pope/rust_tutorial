@@ -65,6 +65,13 @@ name = "limit-tracker"
 version = "0.1.0"
 
 [[package]]
+name = "lru-map"
+version = "0.1.0"
+dependencies = [
+ "d-linked-list",
+]
+
+[[package]]
 name = "minigrep"
 version = "0.1.0"
 

@@ -1,4 +1,5 @@
-use std::cell::RefCell; use std::ops::Deref;
+use std::cell::RefCell;
+use std::ops::Deref;
 use std::rc::Rc;
 
 #[derive(Debug)]
