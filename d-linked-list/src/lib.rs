@@ -200,10 +200,7 @@ impl<T: Copy> List<T> {
 	pub fn remove_node(&mut self, node: &NodePtr<T>) {
 		let (prev, next) = {
 			let mut node = node.borrow_mut();
-			let prev = match node.prev.take() {
-				None => None,
-				Some(prev) => prev.upgrade(),
-			};
+			let prev = node.prev.take().and_then(|prev| prev.upgrade());
 			let next = node.next.take();
 			(prev, next)
 		};
