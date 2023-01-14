@@ -1,5 +1,6 @@
-use std::sync::mpsc;
+use std::sync::{mpsc, Arc, Mutex};
 use std::thread;
+use std::thread::JoinHandle;
 use std::time::Duration;
 
 fn main() {
@@ -8,6 +9,8 @@ fn main() {
 	using_channels();
 	multiple_sends();
 	multiple_sends_with_multiple_senders();
+	mutex_counting();
+	mutex_counting2();
 }
 
 fn simple_run() {
@@ -100,4 +103,50 @@ fn multiple_sends_with_multiple_senders() {
 	for recv in rx {
 		println!("Got [3]: {}", recv);
 	}
+}
+
+fn mutex_counting() {
+	let counter = Arc::new(Mutex::new(0));
+	let mut handlers = vec![];
+
+	for _ in 0..10 {
+		let counter = Arc::clone(&counter);
+		let handle = thread::spawn(move || {
+			let mut num = counter.lock().unwrap();
+			*num += 1;
+		});
+		handlers.push(handle);
+	}
+
+	for handle in handlers {
+		handle.join().unwrap();
+	}
+
+	println!("Mutex Count Result: {}", *counter.lock().unwrap());
+}
+
+// This does the same thing as `mutex_counting`, but using a functional
+// style.
+//
+// What was good to note was that the `collect` is required to batch up all
+// of the threads to spawn. If `collect` is removed, then the iterator will
+// process each thread one at a time - and since `join` blocks, we're not
+// really getting interesting parallelism then. Iterators here are like Streams
+// in other languages where the values are lazily evaluated.
+fn mutex_counting2() {
+	let counter = Arc::new(Mutex::new(0));
+	let handles: Vec<JoinHandle<()>> = (0..10)
+		.map(|_| {
+			let counter = Arc::clone(&counter);
+			thread::spawn(move || {
+				let mut num = counter.lock().unwrap();
+				*num += 1;
+			})
+		})
+		.collect();
+	for handle in handles {
+		handle.join().unwrap();
+	}
+
+	println!("Mutex Count Result (2): {}", *counter.lock().unwrap());
 }
