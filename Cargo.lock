@@ -11,6 +11,10 @@ name = "backyard"
 version = "0.1.0"
 
 [[package]]
+name = "binary-heap"
+version = "0.1.0"
+
+[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -49,6 +53,13 @@ dependencies = [
 [[package]]
 name = "hello_cargo"
 version = "0.1.0"
+
+[[package]]
+name = "k-nearest"
+version = "0.1.0"
+dependencies = [
+ "binary-heap",
+]
 
 [[package]]
 name = "leaves-from-the-vine"
