@@ -10,6 +10,19 @@ impl<T: Ord> MaxHeap<T> {
 		MaxHeap { data: Vec::new() }
 	}
 
+	pub fn new_with_data(data: Vec<T>) -> Self {
+		let mut ret = MaxHeap { data };
+		let mut i = (ret.data.len() - 1) / 2;
+		loop {
+			ret.down_heap(i);
+			if i == 0 {
+				break;
+			}
+			i = i - 1;
+		}
+		ret
+	}
+
 	pub fn insert(&mut self, v: T) {
 		self.data.push(v);
 		self.up_heap();
@@ -86,6 +99,31 @@ mod tests {
 		assert_eq!(heap.extract(), Some(4));
 		assert_eq!(heap.extract(), Some(3));
 		assert_eq!(heap.extract(), Some(0));
+		assert_eq!(heap.extract(), None);
+	}
+
+	#[test]
+	fn test_heap_with_data() {
+		let mut heap = MaxHeap::new_with_data(vec![9, 20, 3, 4, 40, 0, 97]);
+
+		assert_eq!(heap.extract(), Some(97));
+		assert_eq!(heap.extract(), Some(40));
+		assert_eq!(heap.extract(), Some(20));
+		assert_eq!(heap.extract(), Some(9));
+		assert_eq!(heap.extract(), Some(4));
+		assert_eq!(heap.extract(), Some(3));
+		assert_eq!(heap.extract(), Some(0));
+		assert_eq!(heap.extract(), None);
+
+		let mut heap = MaxHeap::new_with_data(vec![7, 9, 2, 15, 10, 5, 12]);
+
+		assert_eq!(heap.extract(), Some(15));
+		assert_eq!(heap.extract(), Some(12));
+		assert_eq!(heap.extract(), Some(10));
+		assert_eq!(heap.extract(), Some(9));
+		assert_eq!(heap.extract(), Some(7));
+		assert_eq!(heap.extract(), Some(5));
+		assert_eq!(heap.extract(), Some(2));
 		assert_eq!(heap.extract(), None);
 	}
 }
