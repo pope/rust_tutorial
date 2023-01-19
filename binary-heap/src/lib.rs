@@ -1,5 +1,3 @@
-use std::vec::Vec;
-
 #[derive(Default, Debug)]
 pub struct MaxHeap<T: Ord> {
 	data: Vec<T>,
@@ -10,25 +8,12 @@ impl<T: Ord> MaxHeap<T> {
 		MaxHeap { data: Vec::new() }
 	}
 
-	pub fn new_with_data(data: Vec<T>) -> Self {
-		let mut ret = MaxHeap { data };
-		let mut i = (ret.data.len() - 1) / 2;
-		loop {
-			ret.down_heap(i);
-			if i == 0 {
-				break;
-			}
-			i -= 1;
-		}
-		ret
-	}
-
-	pub fn insert(&mut self, v: T) {
+	pub fn push(&mut self, v: T) {
 		self.data.push(v);
 		self.up_heap();
 	}
 
-	pub fn extract(&mut self) -> Option<T> {
+	pub fn pop(&mut self) -> Option<T> {
 		match self.data.len() {
 			0 => None,
 			1 => self.data.pop(),
@@ -77,6 +62,52 @@ impl<T: Ord> MaxHeap<T> {
 	}
 }
 
+impl<T: Ord> From<Vec<T>> for MaxHeap<T> {
+	fn from(data: Vec<T>) -> Self {
+		let mut ret = MaxHeap { data };
+
+		if ret.data.is_empty() {
+			return ret;
+		}
+
+		let mut i = (ret.data.len() - 1) / 2;
+		loop {
+			ret.down_heap(i);
+			if i == 0 {
+				break;
+			}
+			i -= 1;
+		}
+		ret
+	}
+}
+
+impl<T: Ord> FromIterator<T> for MaxHeap<T> {
+	fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
+		MaxHeap::from(iter.into_iter().collect::<Vec<T>>())
+	}
+}
+
+impl<T: Ord> IntoIterator for MaxHeap<T> {
+	type Item = T;
+	type IntoIter = MaxOrderedIterator<Self::Item>;
+
+	fn into_iter(self) -> Self::IntoIter {
+		MaxOrderedIterator { heap: self }
+	}
+}
+
+pub struct MaxOrderedIterator<T: Ord> {
+	heap: MaxHeap<T>,
+}
+
+impl<T: Ord> Iterator for MaxOrderedIterator<T> {
+	type Item = T;
+	fn next(&mut self) -> Option<Self::Item> {
+		self.heap.pop()
+	}
+}
+
 #[cfg(test)]
 mod tests {
 	use super::*;
@@ -84,46 +115,52 @@ mod tests {
 	#[test]
 	fn test_heap() {
 		let mut heap = MaxHeap::new();
-		heap.insert(9);
-		heap.insert(20);
-		heap.insert(3);
-		heap.insert(4);
-		heap.insert(40);
-		heap.insert(0);
-		heap.insert(97);
+		heap.push(9);
+		heap.push(20);
+		heap.push(3);
+		heap.push(4);
+		heap.push(40);
+		heap.push(0);
+		heap.push(97);
 
-		assert_eq!(heap.extract(), Some(97));
-		assert_eq!(heap.extract(), Some(40));
-		assert_eq!(heap.extract(), Some(20));
-		assert_eq!(heap.extract(), Some(9));
-		assert_eq!(heap.extract(), Some(4));
-		assert_eq!(heap.extract(), Some(3));
-		assert_eq!(heap.extract(), Some(0));
-		assert_eq!(heap.extract(), None);
+		assert_eq!(heap.pop(), Some(97));
+		assert_eq!(heap.pop(), Some(40));
+		assert_eq!(heap.pop(), Some(20));
+		assert_eq!(heap.pop(), Some(9));
+		assert_eq!(heap.pop(), Some(4));
+		assert_eq!(heap.pop(), Some(3));
+		assert_eq!(heap.pop(), Some(0));
+		assert_eq!(heap.pop(), None);
 	}
 
 	#[test]
 	fn test_heap_with_data() {
-		let mut heap = MaxHeap::new_with_data(vec![9, 20, 3, 4, 40, 0, 97]);
+		let heap = MaxHeap::from(vec![9, 20, 3, 4, 40, 0, 97]);
 
-		assert_eq!(heap.extract(), Some(97));
-		assert_eq!(heap.extract(), Some(40));
-		assert_eq!(heap.extract(), Some(20));
-		assert_eq!(heap.extract(), Some(9));
-		assert_eq!(heap.extract(), Some(4));
-		assert_eq!(heap.extract(), Some(3));
-		assert_eq!(heap.extract(), Some(0));
-		assert_eq!(heap.extract(), None);
+		assert_eq!(
+			heap.into_iter().collect::<Vec<i32>>(),
+			vec![97, 40, 20, 9, 4, 3, 0]
+		);
 
-		let mut heap = MaxHeap::new_with_data(vec![7, 9, 2, 15, 10, 5, 12]);
+		let heap = MaxHeap::from(vec![7, 9, 2, 15, 10, 5, 12]);
 
-		assert_eq!(heap.extract(), Some(15));
-		assert_eq!(heap.extract(), Some(12));
-		assert_eq!(heap.extract(), Some(10));
-		assert_eq!(heap.extract(), Some(9));
-		assert_eq!(heap.extract(), Some(7));
-		assert_eq!(heap.extract(), Some(5));
-		assert_eq!(heap.extract(), Some(2));
-		assert_eq!(heap.extract(), None);
+		assert_eq!(
+			heap.into_iter().collect::<Vec<i32>>(),
+			vec![15, 12, 10, 9, 7, 5, 2]
+		);
+	}
+
+	#[test]
+	fn test_heap_with_empty_vec() {
+		let heap: MaxHeap<i32> = vec![].into();
+
+		assert_eq!(heap.into_iter().collect::<Vec<i32>>(), vec![]);
+	}
+
+	#[test]
+	fn test_heap_with_one_item() {
+		let heap: MaxHeap<_> = vec![32].into();
+
+		assert_eq!(heap.into_iter().collect::<Vec<i32>>(), vec![32]);
 	}
 }

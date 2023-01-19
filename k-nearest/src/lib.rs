@@ -1,6 +1,4 @@
-use std::cmp;
 use std::cmp::Reverse;
-use std::convert::TryFrom;
 
 use binary_heap::MaxHeap;
 
@@ -24,26 +22,19 @@ impl Ord for Point {
 
 impl Eq for Point {}
 
-pub fn k_nearest(points: Vec<Vec<i32>>, k: u32) -> Vec<Vec<i32>> {
-	let k_size = usize::try_from(k).unwrap_or(usize::MAX);
-	let cap = cmp::min(k_size, points.len());
-
-	let mut heap = MaxHeap::new();
-	for point in points {
-		let distance: i32 = point.iter().map(|p| p.pow(2)).sum();
-		let distance: f64 = (distance as f64).sqrt();
-		heap.insert(Reverse(Point { distance, point }));
-	}
-	let mut results = Vec::with_capacity(cap);
-	for _ in 0..cap {
-		results.push(heap.extract().unwrap().0.point);
-	}
-	// Keeping this because I think the `Some(Reverse(v))` part is cool.
-	// for _ in 0..cap {
-	// 	if let Some(Reverse(v)) = heap.extract() {
-	// 		results.push(v.point);
-	// }
-	results
+pub fn k_nearest(points: Vec<Vec<i32>>, k: usize) -> Vec<Vec<i32>> {
+	points
+		.into_iter()
+		.map(|point| {
+			let distance: i32 = point.iter().map(|p| p.pow(2)).sum();
+			let distance: f64 = (distance as f64).sqrt();
+			Reverse(Point { distance, point })
+		})
+		.collect::<MaxHeap<_>>()
+		.into_iter()
+		.take(k)
+		.map(|Reverse(p)| p.point)
+		.collect()
 }
 
 #[cfg(test)]
