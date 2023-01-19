@@ -18,7 +18,7 @@ impl<T: Ord> MaxHeap<T> {
 			if i == 0 {
 				break;
 			}
-			i = i - 1;
+			i -= 1;
 		}
 		ret
 	}
