@@ -1,4 +1,2 @@
-format_code_in_doc_comments = true
 hard_tabs = true
 max_width = 80
-wrap_comments = true
