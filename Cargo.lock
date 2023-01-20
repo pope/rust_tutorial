@@ -55,6 +55,10 @@ name = "hello_cargo"
 version = "0.1.0"
 
 [[package]]
+name = "interior-mutability"
+version = "0.1.0"
+
+[[package]]
 name = "k-nearest"
 version = "0.1.0"
 dependencies = [
