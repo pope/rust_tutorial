@@ -7,3 +7,14 @@ exclude = [
 	"hello_world",
 	"target"
 ]
+
+[profile.release]
+
+# Options from https://github.com/johnthagen/min-sized-rust optimizing for
+# small binaries. Is this needed? no. Is it cool? kinda!
+
+strip = true  # Automatically strip symbols from the binary.
+opt-level = "z"  # Optimize for size.
+lto = true
+codegen-units = 1
+panic = "abort"
