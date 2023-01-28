@@ -57,7 +57,7 @@ impl Drop for CustomSmartPointer {
 
 fn main() {
 	let list = Cons(3, Box::new(Cons(4, Box::new(Cons(5, Box::new(Nil))))));
-	println!("{:?}", list);
+	println!("{list:?}");
 
 	let x = 5;
 	// let y = &x;
@@ -102,7 +102,7 @@ fn main() {
 
 	*value.borrow_mut() += 10;
 
-	println!("a after = {:?}", a);
-	println!("b after = {:?}", b);
-	println!("c after = {:?}", c);
+	println!("a after = {a:?}");
+	println!("b after = {b:?}");
+	println!("c after = {c:?}");
 }

@@ -16,12 +16,12 @@ fn main() {
 fn simple_run() {
 	let handle = thread::spawn(|| {
 		for i in 1..10 {
-			println!("hi number {} from the spawned thread!", i);
+			println!("hi number {i} from the spawned thread!");
 			thread::sleep(Duration::from_millis(1));
 		}
 	});
 	for i in 1..10 {
-		println!("hi number {} from the main thread!", i);
+		println!("hi number {i} from the main thread!");
 		thread::sleep(Duration::from_millis(1));
 	}
 
@@ -31,7 +31,7 @@ fn simple_run() {
 fn thread_with_move() {
 	let v = vec![1, 2, 3];
 	let handle = thread::spawn(move || {
-		println!("Here's a vector: {:?}", v);
+		println!("Here's a vector: {v:?}");
 	});
 	handle.join().unwrap();
 }
@@ -45,7 +45,7 @@ fn using_channels() {
 	});
 
 	let val = rx.recv().unwrap();
-	println!("Got [1]: {}", val);
+	println!("Got [1]: {val}");
 }
 
 fn multiple_sends() {
@@ -65,7 +65,7 @@ fn multiple_sends() {
 	});
 
 	for recv in rx {
-		println!("Got [2]: {}", recv);
+		println!("Got [2]: {recv}");
 		thread::sleep(Duration::from_millis(100));
 	}
 }
@@ -101,7 +101,7 @@ fn multiple_sends_with_multiple_senders() {
 	});
 
 	for recv in rx {
-		println!("Got [3]: {}", recv);
+		println!("Got [3]: {recv}");
 	}
 }
 

@@ -31,7 +31,7 @@ fn main() {
 		height: 50,
 	};
 
-	println!("rect is {:#?}", rect);
+	println!("rect is {rect:#?}");
 	dbg!(&rect);
 	println!("Does the rectangle have a width?: {}", rect.has_width());
 	println!(

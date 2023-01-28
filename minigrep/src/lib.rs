@@ -49,7 +49,7 @@ pub fn run(config: &Config) -> Result<(), Box<dyn error::Error>> {
 	};
 
 	for line in found_lines {
-		println!("{}", line);
+		println!("{line}");
 	}
 
 	Ok(())

@@ -83,7 +83,7 @@ impl<'a> ImportantExcerpt<'a> {
 	}
 
 	fn announce_and_return_part(&self, announcement: &str) -> &str {
-		println!("Attention please: {}", announcement);
+		println!("Attention please: {announcement}");
 		self.part
 	}
 }
@@ -96,7 +96,7 @@ fn longest_with_an_announcement<'a, T>(
 where
 	T: fmt::Display,
 {
-	println!("Announcement! {}", ann);
+	println!("Announcement! {ann}");
 	if x.len() > y.len() {
 		x
 	} else {
@@ -108,19 +108,19 @@ fn main() {
 	let number_list = vec![34, 50, 25, 100, 65];
 
 	let result = largest(&number_list);
-	println!("The largest number is {}", result);
+	println!("The largest number is {result}");
 
 	let char_list = vec!['y', 'm', 'a', 'q'];
 
 	let result = largest(&char_list);
-	println!("The largest char is {}", result);
+	println!("The largest char is {result}");
 
 	let integer = Point { x: 5, y: 10 };
 	let float = Point { x: 1.1, y: 4.0 };
 	let integer_and_float = Point { x: 5, y: 4.0 };
-	println!("Integer: {}", integer);
-	println!("Float: {}", float);
-	println!("Integer and Float mix: {}", integer_and_float);
+	println!("Integer: {integer}");
+	println!("Float: {float}");
+	println!("Integer and Float mix: {integer_and_float}");
 
 	integer.cmp_display();
 	float.cmp_display();
@@ -152,13 +152,13 @@ fn main() {
 	let string2 = "xyz";
 
 	let result = longest(string1.as_str(), string2);
-	println!("The longest string is {}", result);
+	println!("The longest string is {result}");
 
 	let string1 = String::from("long string is long");
 	{
 		let string2 = String::from("xyz");
 		let result = longest(string1.as_str(), string2.as_str());
-		println!("The longest string is {}", result);
+		println!("The longest string is {result}");
 	}
 
 	let novel = String::from("Call me Ishmael. Some years ago...");
@@ -169,9 +169,9 @@ fn main() {
 
 	println!("Important excepter level {}", i.level());
 	let part = i.announce_and_return_part("Yo");
-	println!("Important excepter part: {}", part);
+	println!("Important excepter part: {part}");
 
 	let result =
 		longest_with_an_announcement(string1.as_str(), string2, "Whyyyy?");
-	println!("The longest string is {}", result);
+	println!("The longest string is {result}");
 }
